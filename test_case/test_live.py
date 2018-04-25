@@ -132,8 +132,16 @@ class TestLiveNewServerAjax(BaseCase):
         resp = requests.get(url=settings.PIC_TEST_BASE_URL + app_bg_pic_squre)
         self.assertEqual(resp.status_code, 200)
 
-        self.assertEqual(room_obj['app_bg_pic_big'], '')
-        self.assertEqual(room_obj['app_home_pic_big'], '')
+        app_bg_pic_big = '/images/zb/0f/c0/20170420150411181.jpeg'
+        self.assertEqual(room_obj['app_bg_pic_big'], app_bg_pic_big)
+        resp = requests.get(url=settings.PIC_TEST_BASE_URL + app_bg_pic_big)
+        self.assertEqual(resp.status_code, 200)
+
+        app_home_pic_big = '/images/zb/78/31/20170323035028346.jpeg'
+        self.assertEqual(room_obj['app_home_pic_big'], app_home_pic_big)
+        resp = requests.get(url=settings.PIC_TEST_BASE_URL + app_home_pic_big)
+        self.assertEqual(resp.status_code, 200)
+
         self.assertEqual(room_obj['is_activity_room'], 0)
         self.assertEqual(room_obj['push_stream_channel_id'], 3)
         self.assertEqual(room_obj['is_live_transcoded'], 0)

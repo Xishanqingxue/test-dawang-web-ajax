@@ -15,6 +15,11 @@ class TestAddFollowAjax(BaseCase):
     user_id = settings.TEST_USER_ID
     anchor_id = settings.TEST_ANCHOR_ID
 
+    def setUp(self, *args):
+        super(TestAddFollowAjax,self).setUp()
+        relieve_follow = RelieveFollowAjax(self.user_mobile)
+        relieve_follow.get({'room_id': self.room_id, 'anchor_id': self.anchor_id})
+
     def test_add_follow_success(self):
         """
         测试关注主播成功
