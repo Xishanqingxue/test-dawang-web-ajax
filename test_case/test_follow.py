@@ -75,7 +75,7 @@ class TestAddFollowAjax(BaseCase):
 
     def test_add_follow_room_id_null(self):
         """
-        测试请求接口房间ID为空，可以关注成功
+        测试请求关注接口房间ID为空，可以关注成功
         :return:
         """
         add_follow = AddFollowAjax(self.user_mobile)
@@ -84,7 +84,7 @@ class TestAddFollowAjax(BaseCase):
 
     def test_add_follow_room_id_error(self):
         """
-        测试请求接口房间ID不存在，可以关注成功
+        测试请求关注接口房间ID不存在，可以关注成功
         :return:
         """
         add_follow = AddFollowAjax(self.user_mobile)
@@ -93,7 +93,7 @@ class TestAddFollowAjax(BaseCase):
 
     def test_add_follow_anchor_id_null(self):
         """
-        测试请求接口主播ID为空，关注失败
+        测试请求关注接口主播ID为空，关注失败
         :return:
         """
         add_follow = AddFollowAjax(self.user_mobile)
@@ -103,13 +103,128 @@ class TestAddFollowAjax(BaseCase):
 
     def test_add_follow_anchor_id_error(self):
         """
-        测试请求接口主播ID不存在，关注失败
+        测试请求关注接口主播ID不存在，关注失败
         :return:
         """
         add_follow = AddFollowAjax(self.user_mobile)
         add_follow.get({'room_id': self.room_id, 'anchor_id': 90990909})
         self.assertEqual(add_follow.get_resp_code(),402008)
         self.assertEqual(add_follow.get_resp_message(), '主播信息不存在')
+
+    def test_relieve_follow_success(self):
+        """
+        测试取消关注成功
+        :return:
+        """
+        add_follow = AddFollowAjax(self.user_mobile)
+        add_follow.get({'room_id': self.room_id, 'anchor_id': self.anchor_id})
+        self.assertEqual(add_follow.get_resp_code(),0)
+        result = add_follow.get_resp_result()
+        # 校验关注成功后状态
+        identity_obj = result['identity_obj']
+        self.assertEqual(identity_obj['has_followed'],1)
+
+        relieve_follow = RelieveFollowAjax(self.user_mobile)
+        relieve_follow.get({'room_id': self.room_id, 'anchor_id': self.anchor_id})
+        self.assertEqual(relieve_follow.get_resp_code(),0)
+        result = relieve_follow.get_resp_result()
+        # 校验取消关注成功后状态
+        identity_obj = result['identity_obj']
+        self.assertEqual(identity_obj['has_followed'], 0)
+
+        live_new_server_ajax = LiveNewServer(self.user_mobile)
+        live_new_server_ajax.get({'room_id': self.room_id})
+        self.assertEqual(live_new_server_ajax.get_resp_code(), 0)
+        live_result = live_new_server_ajax.get_resp_result()
+
+        identity_obj = live_result['identity_obj']
+        self.assertEqual(identity_obj['has_followed'],0)
+
+        intimacy_obj = identity_obj['intimacy_obj']
+        self.assertEqual(intimacy_obj['intimacy_experience'],0)
+        self.assertEqual(intimacy_obj['intimacy_rank'],0)
+        self.assertEqual(intimacy_obj['intimacy_next_experience'],0)
+        self.assertIsNone(intimacy_obj['intimacy_level_obj'])
+
+    def test_relieve_follow_room_id_null(self):
+        """
+        测试请求取消关注接口房间ID为空，可以成功
+        :return:
+        """
+        add_follow = AddFollowAjax(self.user_mobile)
+        add_follow.get({'room_id': self.room_id, 'anchor_id': self.anchor_id})
+        self.assertEqual(add_follow.get_resp_code(),0)
+        result = add_follow.get_resp_result()
+        # 校验关注成功后状态
+        identity_obj = result['identity_obj']
+        self.assertEqual(identity_obj['has_followed'],1)
+
+        relieve_follow = RelieveFollowAjax(self.user_mobile)
+        relieve_follow.get({'room_id': None, 'anchor_id': self.anchor_id})
+        self.assertEqual(relieve_follow.get_resp_code(),0)
+
+    def test_relieve_follow_room_id_error(self):
+        """
+        测试请求取消关注接口房间ID不存在，可以成功
+        :return:
+        """
+        add_follow = AddFollowAjax(self.user_mobile)
+        add_follow.get({'room_id': self.room_id, 'anchor_id': self.anchor_id})
+        self.assertEqual(add_follow.get_resp_code(), 0)
+        result = add_follow.get_resp_result()
+        # 校验关注成功后状态
+        identity_obj = result['identity_obj']
+        self.assertEqual(identity_obj['has_followed'], 1)
+
+        relieve_follow = RelieveFollowAjax(self.user_mobile)
+        relieve_follow.get({'room_id': 999888, 'anchor_id': self.anchor_id})
+        self.assertEqual(relieve_follow.get_resp_code(), 0)
+
+    def test_relieve_follow_anchor_id_null(self):
+        """
+        测试请求取消关注接口主播ID为空，可以成功
+        :return:
+        """
+        add_follow = AddFollowAjax(self.user_mobile)
+        add_follow.get({'room_id': self.room_id, 'anchor_id': self.anchor_id})
+        self.assertEqual(add_follow.get_resp_code(),0)
+        result = add_follow.get_resp_result()
+        # 校验关注成功后状态
+        identity_obj = result['identity_obj']
+        self.assertEqual(identity_obj['has_followed'],1)
+
+        relieve_follow = RelieveFollowAjax(self.user_mobile)
+        relieve_follow.get({'room_id': self.room_id, 'anchor_id': None})
+        self.assertEqual(relieve_follow.get_resp_code(),402005)
+        self.assertEqual(relieve_follow.get_resp_message(),'主播ID不能为空')
+
+    def test_relieve_follow_anchor_id_error(self):
+        """
+        测试请求取消关注接口主播ID不存在，可以成功
+        :return:
+        """
+        add_follow = AddFollowAjax(self.user_mobile)
+        add_follow.get({'room_id': self.room_id, 'anchor_id': self.anchor_id})
+        self.assertEqual(add_follow.get_resp_code(), 0)
+        result = add_follow.get_resp_result()
+        # 校验关注成功后状态
+        identity_obj = result['identity_obj']
+        self.assertEqual(identity_obj['has_followed'], 1)
+
+        relieve_follow = RelieveFollowAjax(self.user_mobile)
+        relieve_follow.get({'room_id': self.room_id, 'anchor_id': 99989898})
+        self.assertEqual(relieve_follow.get_resp_code(), 402008)
+        self.assertEqual(relieve_follow.get_resp_message(),'主播信息不存在')
+
+    def test_relieve_follow_not_following(self):
+        """
+        测试未关注主播情况下取消关注该主播
+        :return:
+        """
+        relieve_follow = RelieveFollowAjax(self.user_mobile)
+        relieve_follow.get({'room_id': self.room_id, 'anchor_id': self.anchor_id})
+        self.assertEqual(relieve_follow.get_resp_code(), 402027)
+        self.assertEqual(relieve_follow.get_resp_message(),'该主播未被关注')
 
     def tearDown(self, *args):
         super(TestAddFollowAjax,self).tearDown()
