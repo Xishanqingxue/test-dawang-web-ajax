@@ -3,7 +3,7 @@ from base.login_base import LoginBase
 
 
 
-class LiveAjax(LoginBase):
+class LiveNewServer(LoginBase):
     """
     房间信息
     """

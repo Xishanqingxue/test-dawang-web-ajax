@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from base.login_api import LoginApi
+from base.login import LoginApi
 from base.base_ajax import BaseAjax
 from base.base_log import BaseLogger
 import settings
@@ -7,10 +7,10 @@ import requests
 
 logger = BaseLogger(__name__).get_logger()
 
-class LoginBaseApi(BaseAjax):
+class LoginBase(BaseAjax):
 
     def __init__(self, login_name,password=settings.PUBLIC_PASSWORD ,*args, **kwargs):
-        super(LoginBaseApi, self).__init__(*args,**kwargs)
+        super(LoginBase, self).__init__(*args,**kwargs)
         self.password = password
         self.login_name = login_name
 

@@ -13,18 +13,18 @@ class Redis(BaseRedis):
 
     def delete_image_captcha(self, device_id):
         # 删除图形验证码
-        self.remove("LOGIN_CODE_{0}".format(device_id))
+        self.delete("LOGIN_CODE_{0}".format(device_id))
 
     def clean_user_bean(self,user_id):
         # 删除用户大王豆
-        self.remove(key='REDIS##BEAN##{0}'.format(user_id))
+        self.delete(key='REDIS##BEAN##{0}'.format(user_id))
 
     def clean_user_buy_guard(self, user_id, anchor_id):
         # 清除用户守护信息
-        self.remove(key='ROOM_USER_GUARD_FROM_ANCHOR_{0}'.format(anchor_id))
+        self.delete(key='ROOM_USER_GUARD_FROM_ANCHOR_{0}'.format(anchor_id))
         self.hdel(name='ROOM_USER_GUARD_LIST', key='{0}_{1}'.format(anchor_id, user_id))
         self.hdel(name='ROOM_USER_GUARD_INFO_LIST', key=anchor_id)
-        self.remove(key='I_GUARD_ANCHORS_REDIS_{0}'.format(user_id))
+        self.delete(key='I_GUARD_ANCHORS_REDIS_{0}'.format(user_id))
 
     def clean_black_user(self, anchor_id):
         # 清除黑名单
@@ -32,9 +32,9 @@ class Redis(BaseRedis):
 
     def clean_red_packet(self, room_id, red_packet_id):
         # 清除红包信息
-        self.remove(key='ACT_RED_PACKET_REDIS_REDPACKET_{0}_{1}'.format(room_id, red_packet_id))
-        self.remove(key='ACT_RED_PACKET_REDIS__GET_LIST_{0}_{1}'.format(room_id, red_packet_id))
-        self.remove(key='ACT_RED_PACKET_REDIS_{0}'.format(room_id))
+        self.delete(key='ACT_RED_PACKET_REDIS_REDPACKET_{0}_{1}'.format(room_id, red_packet_id))
+        self.delete(key='ACT_RED_PACKET_REDIS__GET_LIST_{0}_{1}'.format(room_id, red_packet_id))
+        self.delete(key='ACT_RED_PACKET_REDIS_{0}'.format(room_id))
         self.hdel(name='ACT_RED_PACKET_REDIS__LIST_', key=room_id)
 
     def clean_anchor_group(self, user_id, anchor_id):
@@ -49,11 +49,11 @@ class Redis(BaseRedis):
 
     def clean_check_mobile_code(self, user_id):
         # 清除用户是否绑定手机号
-        self.remove(key='check_moble_code_{0}'.format(user_id))
+        self.delete(key='check_moble_code_{0}'.format(user_id))
 
     def clean_user_task(self, user_id):
         # 清除用户任务信息
-        self.remove(key='YL_USER_DAILY_TASK_REDIS_{0}_{1}'.format(user_id, datetime.datetime.now().strftime("%Y%m%d")))
+        self.delete(key='YL_USER_DAILY_TASK_REDIS_{0}_{1}'.format(user_id, datetime.datetime.now().strftime("%Y%m%d")))
         self.hdel(name='YL_USER_ONCE_TASK_REDIS_bind_mobile', key=user_id)
 
     def set_anchor_group_anchor_end_time(self, anchor_id, end_time):
@@ -98,7 +98,7 @@ class Redis(BaseRedis):
     def clean_doll_log(self,user_id,doll_log_id=8888):
         self.hdel(name='doll_log_status', key=doll_log_id)
         self.hdel(name='DOLL_MACHINE_PLAY_SUCCESS_LOG_DATA', key=doll_log_id)
-        self.remove('DOLL_MACHINE_USER_LOG_LIST_{0}'.format(user_id))
+        self.delete('DOLL_MACHINE_USER_LOG_LIST_{0}'.format(user_id))
 
     def add_doll_log(self,user_id, room_id, start_time, end_time, doll_log_id=8888):
         self.hset(name='doll_log_status', key=doll_log_id, content='1')
@@ -138,11 +138,11 @@ class Redis(BaseRedis):
 
     def clean_quiz_questions(self,room_id,question_ids):
         self.hdel('JC_ROOM_INNINGS',key=room_id)
-        self.remove('JC_QUESTION_IDS_1_{0}'.format(room_id))
-        self.remove('JC_QUESTION_IDS_2_{0}'.format(room_id))
+        self.delete('JC_QUESTION_IDS_1_{0}'.format(room_id))
+        self.delete('JC_QUESTION_IDS_2_{0}'.format(room_id))
         for x in question_ids:
-            self.remove('JC_QUESTION_{0}'.format(x))
-            self.remove('JC_AMOUNT_{0}'.format(x))
+            self.delete('JC_QUESTION_{0}'.format(x))
+            self.delete('JC_AMOUNT_{0}'.format(x))
 
 
 class RedisHold(BaseRedis):
@@ -152,7 +152,7 @@ class RedisHold(BaseRedis):
 
     def clean_redis_user_detail(self, user_id):
         # 清除用户信息
-        self.remove(key='CACHED_USER_PROPERTIES_{0}'.format(user_id))
+        self.delete(key='CACHED_USER_PROPERTIES_{0}'.format(user_id))
         self.hdel(name='USERID', key=user_id)
         Redis().clean_user_bean(user_id)
 
@@ -160,7 +160,7 @@ class RedisHold(BaseRedis):
         # 清除房间信息
         self.hdel(name='ROOM', key=room_id)
         self.hdel(name='ANCHOR_ROOM', key=anchor_id)
-        self.remove(key='RANK_ANCHOR_COST_{0}'.format(anchor_id))
+        self.delete(key='RANK_ANCHOR_COST_{0}'.format(anchor_id))
 
     def add_user_package_gift(self,user_id, gift_id, gift_num):
         # 添加背包礼物

@@ -7,17 +7,13 @@ import settings
 
 logger = BaseLogger(__name__).get_logger()
 
-class BaseApi(object):
+class BaseAjax(object):
     url = ''
-    base_url = settings.API_TEST_BASE_URL
-    ajax = False
+    base_url = settings.AJAX_TEST_BASE_URL
 
     def __init__(self):
         self.response = None
-        self.headers = settings.API_HEADERS
-        if self.ajax:
-            # AJAX类型开关，True打开，False关闭
-            self.headers = settings.AJAX_HEADERS
+        self.headers = settings.AJAX_HEADERS
 
     def api_url(self):
         """
@@ -110,7 +106,7 @@ class BaseApi(object):
         :return:
         """
         if self.response:
-            return json.loads(self.response.text)['message']
+            return json.loads(self.response.text)['msg']
 
     def get_resp_result(self):
         """
