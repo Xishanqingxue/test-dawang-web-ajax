@@ -12,6 +12,7 @@ if os.path.exists(SETTING_LOCAL):
 
 AJAX_TEST_BASE_URL = 'http://n.www.dwtv.tv'
 PIC_TEST_BASE_URL = 'http://pic.t.dwtv.tv/files'
+USER_TEST_BASE_URL = 'http://n.user.dwtv.tv'
 
 # 请求HEADERS配置
 AJAX_HEADERS = {'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',

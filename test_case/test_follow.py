@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from ajax.live_new_server import LiveNewServer
-from ajax.user_follow import AddFollowAjax,RelieveFollowAjax
+from ajax.user_follow import AddFollowAjax,RelieveFollowAjax,FollowListAjax
 from base.base_case import BaseCase
 import settings
 import time
@@ -8,7 +8,7 @@ import time
 
 class TestAddFollowAjax(BaseCase):
     """
-    关注主播
+    关注/取消关注/关注列表
     """
     user_mobile = settings.TEST_USER_MOBILE
     room_id = settings.TEST_ROOM
@@ -72,6 +72,16 @@ class TestAddFollowAjax(BaseCase):
         live_result = live_new_server_ajax.get_resp_result()
         # 校验进入房间时关注状态为已关注
         self.assertEqual(live_result['identity_obj']['has_followed'],1)
+        # 校验我的关注列表
+        time.sleep(0.5)
+        follow_list = FollowListAjax(self.user_mobile)
+        follow_list.get()
+        self.assertEqual(follow_list.get_resp_code(),0)
+        follow_list_result = follow_list.get_resp_result()
+
+        user_follow_list = follow_list_result['user_follow_list']
+        self.assertEqual(len(user_follow_list),1)
+        self.assertEqual(user_follow_list[0],int(self.anchor_id))
 
     def test_add_follow_room_id_null(self):
         """
@@ -145,6 +155,15 @@ class TestAddFollowAjax(BaseCase):
         self.assertEqual(intimacy_obj['intimacy_rank'],0)
         self.assertEqual(intimacy_obj['intimacy_next_experience'],0)
         self.assertIsNone(intimacy_obj['intimacy_level_obj'])
+
+        # 校验我的关注列表
+        follow_list = FollowListAjax(self.user_mobile)
+        follow_list.get()
+        self.assertEqual(follow_list.get_resp_code(),0)
+        follow_list_result = follow_list.get_resp_result()
+
+        user_follow_list = follow_list_result['user_follow_list']
+        self.assertEqual(len(user_follow_list),0)
 
     def test_relieve_follow_room_id_null(self):
         """

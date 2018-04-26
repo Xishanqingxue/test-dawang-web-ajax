@@ -20,3 +20,9 @@ class RelieveFollowAjax(LoginBase):
 
     def build_custom_param(self, data):
         return {'room_id': data['room_id'], 'anchor_id': data['anchor_id']}
+
+class FollowListAjax(LoginBase):
+    """
+    关注列表
+    """
+    url = '/ajax/live/userFollowList'

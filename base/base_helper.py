@@ -2,6 +2,7 @@
 import hashlib
 import random
 import re
+import time
 
 
 def md5(string):
@@ -51,3 +52,15 @@ def get_someone_in_string(string,a,b):
     pattern = re.compile(p)  # 编译这段正则表达式
     matcher = re.findall(pattern, key)  # 在源文本中搜索符合正则表达式的部分
     return matcher
+
+def convert_to_timestamp(time_format):
+    """
+    转换为时间戳
+    :param time_format:
+    :return:
+    """
+    # 转换成时间数组
+    timeArray = time.strptime(time_format, "%Y-%m-%d %H:%M:%S")
+    # 转换成时间戳
+    timestamp = time.mktime(timeArray)
+    return int(timestamp)

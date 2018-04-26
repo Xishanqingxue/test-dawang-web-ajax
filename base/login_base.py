@@ -34,5 +34,8 @@ class LoginBase(BaseAjax):
         logger.info('Response:{0}'.format(self.response.text))
         return self.response
 
+class UserLoginBase(LoginBase):
+    base_url = settings.USER_TEST_BASE_URL
+
 
 
