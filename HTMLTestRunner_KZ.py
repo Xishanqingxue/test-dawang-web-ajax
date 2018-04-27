@@ -65,8 +65,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # URL: http://tungwaiyip.info/software/HTMLTestRunner.html
 
-from base.base_mysql import local_execute
-from utilities.mysql_helper import LocalMysqlHelper
 
 # TODO: color stderr
 # TODO: simplify javascript using ,ore than 1 class in the class attribute?
@@ -671,16 +669,6 @@ class HTMLTestRunner(Template_mixin):
 
 
     def _generate_report_test(self, rows, cid, tid, n, t, o, e):
-        # 更新数据库case结果
-        # if settings.ENV !='dev':
-        #     test_case_id = LocalMysqlHelper().get_case_id(func_name=t._testMethodName)
-        #     if n:
-        #         local_execute('update api_case_result set result=0,cum_failed=cum_failed+1 where case_id=%s',
-        #                      params=test_case_id)
-        #     else:
-        #         local_execute('update api_case_result set result=1,cum_success=cum_success+1 where case_id=%s',
-        #                       params=test_case_id)
-
         # e.g. 'pt1.1', 'ft1.1', etc
         has_output = bool(o or e)
         # ID修改点为下划线,支持Bootstrap折叠展开特效 - Findyou

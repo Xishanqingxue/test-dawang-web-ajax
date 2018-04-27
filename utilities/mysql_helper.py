@@ -163,7 +163,10 @@ class MysqlGet(MysqlFix):
     def get_anchor_room_supervisor_details(self):
         # 获取直播间内管理员列表
         details = mysql_helper.execute('select * from anchor_room_supervisor where user_id=%s', params=(self.user_id))
-        return details
+        if details:
+            return details
+        else:
+            return None
 
     def get_gift_details(self,gift_id):
         # 获取单个礼物详情
