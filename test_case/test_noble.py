@@ -8,6 +8,7 @@ from utilities.mysql_helper import MysqlOperation
 from utilities.redis_helper import RedisHold
 import settings
 import time
+import datetime
 
 
 class TestBuyNobleAjax(BaseCase):
@@ -19,6 +20,9 @@ class TestBuyNobleAjax(BaseCase):
     user_id = settings.TEST_USER_ID
     anchor_id = settings.TEST_ANCHOR_ID
     one_month = 29
+    two_month = 60
+    three_month = 90
+    six_month = 182
 
     def setUp(self, *args):
         super(TestBuyNobleAjax, self).setUp(user_id=self.user_id)
@@ -27,12 +31,20 @@ class TestBuyNobleAjax(BaseCase):
         time.sleep(0.3)
 
     def buy_noble_action(self, **kwargs):
+        days = None
         noble_gold = kwargs['noble_gold']
         noble_id = kwargs['noble_id']
         noble_num = kwargs['noble_num']
         user_rank = kwargs['user_rank']
         user_experience = kwargs['user_experience']
-
+        if noble_num == 1:
+            days = self.one_month
+        elif noble_num == 2:
+            days = self.two_month
+        elif noble_num == 3:
+            days = self.three_month
+        elif noble_num == 6:
+            days = self.six_month
         live_new_server_ajax = LiveNewServer(self.user_mobile)
         live_new_server_ajax.get({'room_id': self.room_id})
         self.assertEqual(live_new_server_ajax.get_resp_code(), 0)
@@ -60,10 +72,10 @@ class TestBuyNobleAjax(BaseCase):
         # 校验贵族等级
         self.assertEqual(identity_obj['noble_rank'], noble_id)
         # 校验有效天数
-        # self.assertEqual(identity_obj['noble_rest_time_int'],self.one_month)
-        # self.assertEqual(identity_obj['noble_rest_time_str'],'{0}天'.format(self.one_month))
-        # noble_expiretime = identity_obj['noble_expiretime']
-        # self.assertIn((datetime.datetime.now() + datetime.timedelta(days=+self.one_month)).strftime("%Y-%m-%d %H:%M"),noble_expiretime)
+        self.assertEqual(identity_obj['noble_rest_time_int'],days)
+        self.assertEqual(identity_obj['noble_rest_time_str'],'{0}天'.format(days))
+        noble_expiretime = identity_obj['noble_expiretime']
+        self.assertIn((datetime.datetime.now() + datetime.timedelta(days=+days)).strftime("%Y-%m-%d %H:%M"),noble_expiretime)
 
         # 校验消费记录
         consumption_ajax = ConsumptionAjax(self.user_mobile)
@@ -108,10 +120,10 @@ class TestBuyNobleAjax(BaseCase):
         # 校验贵族等级
         self.assertEqual(identity_obj['noble_rank'], noble_id)
         # 校验有效天数
-        # self.assertEqual(identity_obj['noble_rest_time_int'],self.one_month)
-        # self.assertEqual(identity_obj['noble_rest_time_str'],'{0}天'.format(self.one_month))
-        # noble_expiretime = identity_obj['noble_expiretime']
-        # self.assertIn((datetime.datetime.now() + datetime.timedelta(days=+self.one_month)).strftime("%Y-%m-%d %H:%M"),noble_expiretime)
+        self.assertEqual(identity_obj['noble_rest_time_int'],days)
+        self.assertEqual(identity_obj['noble_rest_time_str'],'{0}天'.format(days))
+        noble_expiretime = identity_obj['noble_expiretime']
+        self.assertIn((datetime.datetime.now() + datetime.timedelta(days=+days)).strftime("%Y-%m-%d %H:%M"),noble_expiretime)
         # 校验进场动画
         msg = live_result['enter_room_message']['msg']
         self.assertEqual(msg['m_action'], 'system_room')
@@ -361,3 +373,127 @@ class TestBuyNobleAjax(BaseCase):
         MysqlOperation(user_id=self.user_id).clean_user_noble()
         RedisHold().clean_redis_user_detail(self.user_id)
         time.sleep(0.3)
+
+
+
+
+
+class TestBuyNobleAjaxAbnormal(BaseCase):
+    """
+    贵买贵族-异常
+    """
+    user_mobile = settings.TEST_USER_MOBILE
+    room_id = settings.TEST_ROOM
+    user_id = settings.TEST_USER_ID
+    anchor_id = settings.TEST_ANCHOR_ID
+
+
+    def test_buy_noble_room_id_null(self):
+        """
+        测试请求接口房间ID为空
+        :return:
+        """
+        buy_noble_ajax = BuyNobleAjax(self.user_mobile)
+        buy_noble_ajax.get({'room_id': None, 'anchor_id': self.anchor_id, 'noble_id': 1,
+                            'num': 1, 'currency': 'gold'})
+        self.assertEqual(buy_noble_ajax.get_resp_code(), 402000)
+        self.assertEqual(buy_noble_ajax.get_resp_message(),'房间ID不能为空')
+
+    def test_buy_noble_room_id_error(self):
+        """
+        测试请求接口房间ID不存在
+        :return:
+        """
+        buy_noble_ajax = BuyNobleAjax(self.user_mobile)
+        buy_noble_ajax.get({'room_id': '909090', 'anchor_id': self.anchor_id, 'noble_id': 1,
+                            'num': 1, 'currency': 'gold'})
+        self.assertEqual(buy_noble_ajax.get_resp_code(), 801017)
+        self.assertEqual(buy_noble_ajax.get_resp_message(),'房间信息不存在')
+
+    def test_buy_noble_anchor_id_null(self):
+        """
+        测试请求接口主播ID为空
+        :return:
+        """
+        buy_noble_ajax = BuyNobleAjax(self.user_mobile)
+        buy_noble_ajax.get({'room_id': self.room_id, 'anchor_id': None, 'noble_id': 1,
+                            'num': 1, 'currency': 'gold'})
+        self.assertEqual(buy_noble_ajax.get_resp_code(), 100032)
+        self.assertEqual(buy_noble_ajax.get_resp_message(),'账户金币不足')
+
+    def test_buy_noble_anchor_id_error(self):
+        """
+        测试请求接口主播ID不存在
+        :return:
+        """
+        buy_noble_ajax = BuyNobleAjax(self.user_mobile)
+        buy_noble_ajax.get({'room_id': self.room_id, 'anchor_id': '90909090', 'noble_id': 1,
+                            'num': 1, 'currency': 'gold'})
+        self.assertEqual(buy_noble_ajax.get_resp_code(), 100032)
+        self.assertEqual(buy_noble_ajax.get_resp_message(),'账户金币不足')
+
+    def test_buy_noble_noble_id_null(self):
+        """
+        测试请求接口贵族ID为空
+        :return:
+        """
+        buy_noble_ajax = BuyNobleAjax(self.user_mobile)
+        buy_noble_ajax.get({'room_id': self.room_id, 'anchor_id': self.anchor_id, 'noble_id': None,
+                            'num': 1, 'currency': 'gold'})
+        self.assertEqual(buy_noble_ajax.get_resp_code(), 402028)
+        self.assertEqual(buy_noble_ajax.get_resp_message(),'贵族ID不符合规则')
+
+    def test_buy_noble_noble_id_error(self):
+        """
+        测试请求接口贵族ID不存在
+        :return:
+        """
+        buy_noble_ajax = BuyNobleAjax(self.user_mobile)
+        buy_noble_ajax.get({'room_id': self.room_id, 'anchor_id': self.anchor_id, 'noble_id': 99,
+                            'num': 1, 'currency': 'gold'})
+        self.assertEqual(buy_noble_ajax.get_resp_code(), 402025)
+        self.assertEqual(buy_noble_ajax.get_resp_message(),'贵族信息不存在')
+
+    def test_buy_noble_noble_num_null(self):
+        """
+        测试请求接口贵族月数为空
+        :return:
+        """
+        buy_noble_ajax = BuyNobleAjax(self.user_mobile)
+        buy_noble_ajax.get({'room_id': self.room_id, 'anchor_id': self.anchor_id, 'noble_id': 1,
+                            'num': None, 'currency': 'gold'})
+        self.assertEqual(buy_noble_ajax.get_resp_code(), 402029)
+        self.assertEqual(buy_noble_ajax.get_resp_message(),'贵族购买数量有误')
+
+    def test_buy_noble_noble_num_error(self):
+        """
+        测试请求接口贵族月数不正确
+        :return:
+        """
+        buy_noble_ajax = BuyNobleAjax(self.user_mobile)
+        buy_noble_ajax.get({'room_id': self.room_id, 'anchor_id': self.anchor_id, 'noble_id': 1,
+                            'num': 111, 'currency': 'gold'})
+        self.assertEqual(buy_noble_ajax.get_resp_code(), 100032)
+        self.assertEqual(buy_noble_ajax.get_resp_message(),'账户金币不足')
+
+    def test_buy_noble_noble_currency_null(self):
+        """
+        测试请求接口贵族货币类型为空
+        :return:
+        """
+        buy_noble_ajax = BuyNobleAjax(self.user_mobile)
+        buy_noble_ajax.get({'room_id': self.room_id, 'anchor_id': self.anchor_id, 'noble_id': 1,
+                            'num': 1, 'currency': None})
+        self.assertEqual(buy_noble_ajax.get_resp_code(), 460004)
+        self.assertEqual(buy_noble_ajax.get_resp_message(),'请选择货币类型')
+
+    def test_buy_noble_noble_currency_error(self):
+        """
+        测试请求接口贵族货币类型不正确
+        :return:
+        """
+        buy_noble_ajax = BuyNobleAjax(self.user_mobile)
+        buy_noble_ajax.get({'room_id': self.room_id, 'anchor_id': self.anchor_id, 'noble_id': 1,
+                            'num': 1, 'currency': 'abc'})
+        self.assertEqual(buy_noble_ajax.get_resp_code(), 460004)
+        self.assertEqual(buy_noble_ajax.get_resp_message(),'请选择货币类型')

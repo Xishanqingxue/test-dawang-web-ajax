@@ -65,6 +65,7 @@ class BaseAjax(object):
         request_data = self.format_param(data)
         logger.info('Data:{0}'.format(request_data))
         s = requests.session()
+        s.cookies.set('client_identity', settings.CLIENT_IDENTITY)
         self.response = s.get(url=self.api_url(), params=request_data, headers=self.headers)
         logger.info('Headers:{0}'.format(self.response.request.headers))
         logger.info('Response:{0}'.format(self.response.text))
@@ -117,3 +118,5 @@ class BaseAjax(object):
             return json.loads(self.response.text)['result']
 
 
+class UserBaseAjax(BaseAjax):
+    base_url = settings.USER_TEST_BASE_URL

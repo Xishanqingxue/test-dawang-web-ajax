@@ -32,6 +32,7 @@ class LoginBase(BaseAjax):
             request_data = self.format_param(data)
             s = requests.session()
             s.cookies.set('identity', identity)
+            s.cookies.set('client_identity',settings.CLIENT_IDENTITY)
             self.response = s.get(url=self.api_url(), params=request_data, headers=self.headers)
             if int(json.loads(self.response.text)['code']) != 100002:
                 break

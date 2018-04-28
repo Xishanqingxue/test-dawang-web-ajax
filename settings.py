@@ -3,6 +3,7 @@ import os
 import time
 
 ENV = 'test'
+CLIENT_IDENTITY = 'test-web-ajax'
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SETTING_LOCAL = os.path.join(BASE_DIR, "settings_local.py")
