@@ -127,7 +127,7 @@ class TestBuySunAjax(BaseCase):
         mysql_operation = MysqlOperation(user_id=self.user_id)
         mysql_operation.fix_user_account(gold_num=2000)
         RedisHold().clean_redis_user_detail(self.user_id)
-        time.sleep(0.3)
+        time.sleep(0.5)
 
         live_new_server_ajax = LiveNewServer(self.user_mobile)
         live_new_server_ajax.get({'room_id': self.room_id})
@@ -189,7 +189,7 @@ class TestBuySunAjax(BaseCase):
         mysql_operation = MysqlOperation(user_id=self.user_id)
         mysql_operation.fix_user_account(gold_num=2000)
         RedisHold().clean_redis_user_detail(self.user_id)
-        time.sleep(0.3)
+        time.sleep(0.5)
 
         live_new_server_ajax = LiveNewServer(self.user_mobile)
         live_new_server_ajax.get({'room_id': self.room_id})
