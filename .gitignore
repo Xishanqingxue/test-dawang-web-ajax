@@ -107,3 +107,6 @@ spike*.py
 .idea/**
 
 *.log
+
+log/**
+result/**

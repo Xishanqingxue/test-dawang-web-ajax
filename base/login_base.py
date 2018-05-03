@@ -42,6 +42,29 @@ class LoginBase(BaseAjax):
             logger.info('Response:{0}'.format(self.response.text))
         return self.response
 
+    def post(self, data=None):
+        """
+        请求方式：POST
+        :param data:
+        :return:
+        """
+        num = 1
+        while num <= 3:
+            logger.info('The {0} request.'.format(num))
+            identity = self.get_identity()
+            request_data = self.format_param(data)
+            s = requests.session()
+            s.cookies.set('identity', identity)
+            s.cookies.set('client_identity',settings.CLIENT_IDENTITY)
+            self.response = s.post(url=self.api_url(), data=request_data, headers=self.headers)
+            if int(json.loads(self.response.text)['code']) != 100002:
+                break
+            else:
+                num += 1
+            logger.info('Headers:{0}'.format(self.response.request.headers))
+            logger.info('Response:{0}'.format(self.response.text))
+        return self.response
+
 class UserLoginBase(LoginBase):
     base_url = settings.USER_TEST_BASE_URL
 

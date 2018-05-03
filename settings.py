@@ -19,6 +19,7 @@ H5_TEST_BASE_URL = 'http://n.h5.dawang.tv'
 # 请求HEADERS配置
 AJAX_HEADERS = {'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 'X-Requested-With': 'XMLHttpRequest'}
+# AJAX_HEADERS = {'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'}
 
 # 日志配置
 now_time = time.strftime("%Y_%m_%d_%H_%M_%S")
