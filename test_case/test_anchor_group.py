@@ -476,3 +476,72 @@ class TestAddAnchorToGroupAjax(BaseCase):
         Redis().clean_user_buy_guard(self.user_id, self.anchor_id)
 
 
+
+
+
+# class TestAnchorGroupWithdraw(BaseCase):
+#     """
+#     金库提现
+#     """
+#     user_mobile = settings.TEST_USER_MOBILE
+#     user_id = settings.TEST_USER_ID
+#     anchor_id = settings.TEST_ANCHOR_ID
+#     room_id = settings.TEST_ROOM
+#     user_rank = 12
+#     user_experience_all = 2000000
+#
+#     def setUp(self, user_id=None, anchor_id=None):
+#         super(TestAnchorGroupWithdraw,self).setUp(user_id=self.user_id)
+#         MysqlOperation(user_id=self.user_id).fix_anchor_group_gold().clean_user_anchor_group()
+#         Redis().clean_anchor_group(self.user_id, self.anchor_id)
+#         MysqlOperation(user_id=self.user_id).clean_user_guard()
+#         Redis().clean_user_buy_guard(self.user_id, self.anchor_id)
+#
+#
+#     def test_anchor_group_withdraw_success(self):
+#         """
+#         测试金库提现成功
+#         :return:
+#         """
+#         mysql_operation = MysqlOperation(user_id=self.user_id)
+#         mysql_operation.fix_user_rank_and_experience(user_rank=self.user_rank,experience_all=self.user_experience_all)
+#         mysql_operation.fix_user_account(gold_num=588000)
+#         RedisHold().clean_redis_user_detail(self.user_id)
+#         time.sleep(0.3)
+#
+#         buy_guard_ajax = BuyGuardAjax(self.user_mobile)
+#         buy_guard_ajax.get({'room_id': self.room_id, 'guard_id': 1, 'currency': 'gold'})
+#         self.assertEqual(buy_guard_ajax.get_resp_code(), 0)
+#
+#         mysql_operation = MysqlOperation(user_id=self.user_id)
+#         mysql_operation.fix_user_account(gold_num=100000)
+#         RedisHold().clean_redis_user_detail(self.user_id)
+#         time.sleep(0.5)
+#
+#         open_anchor_group = OpenAnchorGroupAjax(self.user_mobile)
+#         open_anchor_group.get()
+#
+#         self.assertEqual(open_anchor_group.get_resp_code(),0)
+#         anchor_group_obj = open_anchor_group.get_resp_result()['anchor_group_obj']
+#         self.assertEqual(anchor_group_obj['user_id'], int(self.user_id))
+#         self.assertEqual(anchor_group_obj['gold'], 0)
+#         self.assertEqual(anchor_group_obj['max_num'], 2)
+#         self.assertEqual(anchor_group_obj['next_level'], 18)
+#         self.assertEqual(anchor_group_obj['next_level_name'], u'1级上校')
+#         self.assertEqual(anchor_group_obj['owend_anchor_count'], 0)
+#
+#         mysql_operation = MysqlOperation(user_id=self.user_id)
+#         mysql_operation.fix_user_account(gold_num=50000)
+#         RedisHold().clean_redis_user_detail(self.user_id)
+#         time.sleep(0.3)
+#
+#         add_anchor_to_group = AddAnchorToGroup(self.user_mobile)
+#         add_anchor_to_group.post({'position': 1, 'anchor_id': self.anchor_id, 'grab_flag': 0,'change_flag': 0})
+#         self.assertEqual(add_anchor_to_group.get_resp_code(),0)
+#
+#         anchor_group_list = add_anchor_to_group.get_resp_result()['anchor_group_list']
+#         self.assertEqual(len(anchor_group_list),2)
+#         self.assertIsNone(anchor_group_list[1])
+#
+#         anchor_obj = anchor_group_list[0]['anchor_obj']
+#         self.assertEqual(anchor_obj['id'],self.anchor_id)

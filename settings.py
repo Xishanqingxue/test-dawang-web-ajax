@@ -42,7 +42,7 @@ REPORT_TESTER = '大王直播测试组'
 MAIL_SERVER = 'smtp.163.com'
 MAIL_FROM = '13501077762@163.com'
 MAIL_FROM_PASSWORD = 'yinglong123'
-MAIL_HEADER = 'Automated test report'
+MAIL_HEADER = 'Ajax接口自动化测试结果'
 MAIL_TO = 'gaoyinglong@kong.net'
 
 # Mysql配置
